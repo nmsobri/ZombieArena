@@ -1,4 +1,17 @@
+#include <cmath>
 #include "include/Player.h"
+
+Player::Player(const char* filePath) {
+    speed = START_SPEED;
+    health = START_HEALTH;
+    maxHealth = START_HEALTH;
+
+    /* Associate a texture with the sprite */
+    texture.loadFromFile(filePath);
+    sprite.setTexture(texture);
+
+    sprite.setOrigin(25, 25);
+}
 
 Player::Player() {
     speed = START_SPEED;
@@ -14,9 +27,8 @@ Player::Player() {
 
 void Player::spawn(sf::IntRect _arena, sf::Vector2f _resolution, int _tileSize) {
     /* Place the player in the middle of the arena*/
-    position.x = arena.width / 2;
-
-    position.y = arena.height / 2;
+    position.x = _arena.width / 2;
+    position.y = _arena.height / 2;
 
     /* Copy the details of the arena to the players arena*/
     arena.left = _arena.left;
@@ -119,10 +131,12 @@ void Player::update(float elapsedTime, sf::Vector2i mousePosition) {
     sprite.setPosition(position);
 
     /* keep the player in the arena */
+    /* Put player to the right most tile*/
     if (position.x > arena.width - tileSize) {
         position.x = arena.width - tileSize;
     }
 
+    /* Put player to the left most tile*/
     if (position.x < arena.left + tileSize) {
         position.x = arena.left + tileSize;
     }
@@ -138,11 +152,7 @@ void Player::update(float elapsedTime, sf::Vector2i mousePosition) {
     }
 
     /* Calculate the angle the player is facing */
-    float angle = (atan2(mousePosition.y - resolution.y / 2,
-                         mousePosition.x - resolution.x / 2) *
-                   180) /
-                  3.141;
-
+    float angle = (std::atan2(mousePosition.y - resolution.y / 2, mousePosition.x - resolution.x / 2) * 180) / 3.141;
     sprite.setRotation(angle);
 }
 

@@ -1,4 +1,5 @@
 #pragma once
+
 #include <SFML/Graphics.hpp>
 
 class Player {
@@ -29,7 +30,7 @@ class Player {
     bool leftPressed;
     bool rightPressed;
 
-    /* How much health has the player got */
+    /* How much health has the player have */
     int health;
 
     /* What is the maximum health the player can have */
@@ -41,13 +42,14 @@ class Player {
     /* Speed in pixels per seconds */
     float speed;
 
-   public:
+  public:
     Player();
+    Player(const char*);
 
     void spawn(sf::IntRect arena, sf::Vector2f resolution, int tileSize);
 
     /* Handle the player getting hit by a zombie */
-    bool hit(sf::Time timeHit;);
+    bool hit(sf::Time timeHit);
 
     /* How long ago was the palyer last hit */
     sf::Time getLastHitTime();
