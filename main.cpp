@@ -1,6 +1,8 @@
 #include <iostream>
 #include <SFML/Graphics.hpp>
 #include "include/Player.h"
+#include "include/Utility.h"
+#include "include/Zombie.h"
 
 int main() {
     /* The game will always be in one of four states */
@@ -10,6 +12,9 @@ int main() {
         GAME_OVER,
         PLAYING
     };
+
+    int numZombies = 0;
+    game::Zombie* zombies;
 
     /* Start with the GAME_OVER state */
     State state = State::GAME_OVER;
@@ -42,6 +47,13 @@ int main() {
     /* The boundaries of the arena */
     sf::IntRect arena;
 
+    /* Create the background */
+    sf::VertexArray background;
+
+    /* Load the texture for our background vertex array */
+    sf::Texture textureBackground;
+    textureBackground.loadFromFile("asset/graphic/background_sheet.png");
+
     /* The main game loop */
     while (window.isOpen()) {
         /*
@@ -51,85 +63,95 @@ int main() {
     */
         sf::Event event;
         while (window.pollEvent(event)) {
-            if (event.type == sf::Event::KeyPressed) {
-                if (event.key.code == sf::Keyboard::Return) {
-                    if (state == State::PLAYING) {
-                        state = State::PAUSED;
-                    } else if (state == State::PAUSED) {
-                        state = State::PLAYING;
-                        clock.restart();
-                    } else if (state == State::GAME_OVER) {
-                        state = State::LEVELING_UP;
-                    }
-                }
-
-                if (event.key.code == sf::Keyboard::Escape) {
+            switch (event.type) {
+                case sf::Event::Closed:
                     window.close();
-                }
+                    break;
 
-                if (state == State::PLAYING) {
-                    if (event.key.code == sf::Keyboard::W) {
-                        player.moveUp();
-                    } else {
-                        player.stopUp();
+                case sf::Event::KeyPressed:
+                    if (event.key.code == sf::Keyboard::Escape) {
+                        window.close();
                     }
 
-                    if (event.key.code == sf::Keyboard::S) {
-                        player.moveDown();
-                    } else {
-                        player.stopDown();
+                    if (event.key.code == sf::Keyboard::Return) {
+                        if (state == State::PLAYING) {
+                            state = State::PAUSED;
+                        } else if (state == State::PAUSED) {
+                            state = State::PLAYING;
+                            clock.restart();
+                        } else if (state == State::GAME_OVER) {
+                            state = State::LEVELING_UP;
+                        }
                     }
 
-                    if (event.key.code == sf::Keyboard::A) {
-                        player.moveLeft();
-                    } else {
-                        player.stopLeft();
+                    /* Handle the levelling up state */
+                    if (state == State::LEVELING_UP) {
+                        /* Handle the player levelling up */
+                        if (event.key.code == sf::Keyboard::Num1 ||
+                            event.key.code == sf::Keyboard::Num2 ||
+                            event.key.code == sf::Keyboard::Num3 ||
+                            event.key.code == sf::Keyboard::Num4 ||
+                            event.key.code == sf::Keyboard::Num5 ||
+                            event.key.code == sf::Keyboard::Num6) {
+                            /* Prepare the level */
+                            arena.width = 1000;
+                            arena.height = 1000;
+                            arena.left = 0;
+                            arena.top = 0;
+
+                            /* Pass the vertex array by reference to the createBackground function */
+                            int tileSize = game::Utility::createBackground(background, arena);
+
+                            numZombies = 20;
+                            // delete[] zombies;
+                            zombies = game::Utility::createHorde(numZombies, arena);
+
+                            /* Spawn the player in the middle of the arena */
+                            player.spawn(arena, resolution, tileSize);
+
+                            /* Reset the clock so there isn't a frame jump */
+                            clock.restart();
+
+                            state = State::PLAYING;
+                        }
                     }
+                    break;
 
-                    if (event.key.code == sf::Keyboard::D) {
-                        player.moveRight();
-                    } else {
-                        player.stopRight();
-                    }
-                }
+                default:
+                    break;
+            }
+        }
 
-                /* Handle the levelling up state */
-                if (state == State::LEVELING_UP) {
-                    /* Handle the player levelling up */
-                    if (event.key.code == sf::Keyboard::Num1 ||
-                        event.key.code == sf::Keyboard::Num2 ||
-                        event.key.code == sf::Keyboard::Num3 ||
-                        event.key.code == sf::Keyboard::Num4 ||
-                        event.key.code == sf::Keyboard::Num5 ||
-                        event.key.code == sf::Keyboard::Num6) {
-                        state = State::PLAYING;
-                    }
+        if (state == State::PLAYING) {
+            if (sf::Keyboard::isKeyPressed(sf::Keyboard::W)) {
+                player.moveUp();
+            } else {
+                player.stopUp();
+            }
 
-                    if (state == State::PLAYING) {
-                        /* Prepare the level */
-                        /* We will modify the next two lines later */
-                        arena.width = 500;
-                        arena.height = 500;
-                        arena.left = 0;
-                        arena.top = 0;
+            if (sf::Keyboard::isKeyPressed(sf::Keyboard::S)) {
+                player.moveDown();
+            } else {
+                player.stopDown();
+            }
 
-                        /* We will modify this line of code later */
-                        int tileSize = 50;
+            if (sf::Keyboard::isKeyPressed(sf::Keyboard::A)) {
+                player.moveLeft();
+            } else {
+                player.stopLeft();
+            }
 
-                        /* Spawn the player in the middle of the arena */
-                        player.spawn(arena, resolution, tileSize);
-
-                        /* Reset the clock so there isn't a frame jump */
-                        clock.restart();
-                    }
-                }
+            if (sf::Keyboard::isKeyPressed(sf::Keyboard::D)) {
+                player.moveRight();
+            } else {
+                player.stopRight();
             }
         }
 
         /*
         *********************************
         * Update the frame
-        * *******************************
+        *********************************
         */
         if (state == State::PLAYING) {
             /* Update the delta time */
@@ -155,6 +177,12 @@ int main() {
 
             /* Make the view centre around the player */
             mainView.setCenter(player.getCenter());
+
+            for (int i = 0; i < numZombies; i++) {
+                if (zombies[i].isAlive()) {
+                    zombies[i].update(dt.asSeconds(), playerPosition);
+                }
+            }
         }
 
         /*
@@ -162,12 +190,20 @@ int main() {
         * Draw the scene
         * *******************************
         */
-        if (state == State::PLAYING) {
-            window.clear();
+        window.clear();
 
+        if (state == State::PLAYING) {
             /* Set the mainView to be displayed in the window */
             /* And draw everything related to it */
             window.setView(mainView);
+
+            /* Draw the background */
+            window.draw(background, &textureBackground);
+
+            /* Draw the zombies */
+            for (int i = 0; i < numZombies; i++) {
+                window.draw(zombies[i].getSprite());
+            }
 
             /* Draw the player */
             window.draw(player.getSprite());
