@@ -1,5 +1,6 @@
-#include <iostream>
+#include <array>
 #include <SFML/Graphics.hpp>
+#include "include/Bullet.h"
 #include "include/Player.h"
 #include "include/Utility.h"
 #include "include/Zombie.h"
@@ -13,8 +14,11 @@ int main() {
         PLAYING
     };
 
-    int numZombies = 0;
-    game::Zombie* zombies;
+    float fireRate = 3;
+    sf::Time lastPressed;
+    int currentBullet = 0;
+    std::array<game::Bullet, 100> bullets;
+    std::array<game::Zombie, 50> zombies;
 
     /* Start with the GAME_OVER state */
     State state = State::GAME_OVER;
@@ -101,10 +105,7 @@ int main() {
 
                             /* Pass the vertex array by reference to the createBackground function */
                             int tileSize = game::Utility::createBackground(background, arena);
-
-                            numZombies = 20;
-                            // delete[] zombies;
-                            zombies = game::Utility::createHorde(numZombies, arena);
+                            game::Utility::createHorde<game::Zombie, zombies.size()>(zombies, arena);
 
                             /* Spawn the player in the middle of the arena */
                             player.spawn(arena, resolution, tileSize);
@@ -146,6 +147,16 @@ int main() {
             } else {
                 player.stopRight();
             }
+
+            if (sf::Keyboard::isKeyPressed(sf::Keyboard::Space)) {
+                if (gameTimeTotal.asMilliseconds() - lastPressed.asMilliseconds() > 1000 / fireRate) {
+                    bullets[currentBullet].shoot(player.getCenter().x, player.getCenter().y, mouseWorldPosition.x, mouseWorldPosition.y);
+
+                    currentBullet++;
+                    currentBullet = currentBullet % bullets.size();    // set current bullet to 0 if its current value eq to bullet size
+                    lastPressed = gameTimeTotal;
+                }
+            }
         }
 
         /*
@@ -178,9 +189,15 @@ int main() {
             /* Make the view centre around the player */
             mainView.setCenter(player.getCenter());
 
-            for (int i = 0; i < numZombies; i++) {
-                if (zombies[i].isAlive()) {
-                    zombies[i].update(dt.asSeconds(), playerPosition);
+            for (auto& zombie : zombies) {
+                if (zombie.isAlive()) {
+                    zombie.update(dt.asSeconds(), playerPosition);
+                }
+            }
+
+            for (auto& bullet : bullets) {
+                if (bullet.isBulletInFlight()) {
+                    bullet.update(dt.asSeconds());
                 }
             }
         }
@@ -201,8 +218,13 @@ int main() {
             window.draw(background, &textureBackground);
 
             /* Draw the zombies */
-            for (int i = 0; i < numZombies; i++) {
-                window.draw(zombies[i].getSprite());
+            for (game::Zombie& zombie : zombies) {
+                window.draw(zombie.getSprite());
+            }
+
+            /* Draw the bullets*/
+            for (game::Bullet& bullet : bullets) {
+                window.draw(bullet.getShape());
             }
 
             /* Draw the player */

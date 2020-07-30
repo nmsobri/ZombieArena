@@ -1,22 +1,22 @@
 #include "include/Bullet.h"
 
-Bullet::Bullet() {
+game::Bullet::Bullet() {
     bulletShape.setSize(sf::Vector2f(2, 2));
 }
 
-Bullet::~Bullet() {
+game::Bullet::~Bullet() {
 }
 
-void Bullet::stop() {
+void game::Bullet::stop() {
     isInFlight = false;
 }
 
-bool Bullet::isBulletInFlight() {
+bool game::Bullet::isBulletInFlight() {
     return isInFlight;
 }
 
 /* Launch a new bullet */
-void Bullet::shoot(float startX, float startY, float targetX, float targetY) {
+void game::Bullet::shoot(float startX, float startY, float targetX, float targetY) {
     /* Keep track of the bullet*/
     isInFlight = true;
     position.x = startX;
@@ -31,7 +31,7 @@ void Bullet::shoot(float startX, float startY, float targetX, float targetY) {
     }
 
     /* Calculate the ratio between x and t */
-    float ratioXY = bulletSpeed / (1 + gradient);
+    float ratioXY = bulletSpeed / (gradient + 1);
 
     /* Set the "speed" horizontally and vertically */
     bulletDistanceY = ratioXY;
@@ -58,17 +58,17 @@ void Bullet::shoot(float startX, float startY, float targetX, float targetY) {
 }
 
 /* Tell the calling code where the bullet is in the world */
-sf::FloatRect Bullet::getPosition() {
+sf::FloatRect game::Bullet::getPosition() {
     return bulletShape.getGlobalBounds();
 }
 
 /* Return the actual shape (for drawing) */
-sf::RectangleShape Bullet::getShape() {
+sf::RectangleShape game::Bullet::getShape() {
     return bulletShape;
 }
 
 /* Update the bullet each frame */
-void Bullet::update(float deltaTime) {
+void game::Bullet::update(float deltaTime) {
     /* Update the bullet position variables */
     position.x += bulletDistanceX * deltaTime;
     position.y += bulletDistanceY * deltaTime;

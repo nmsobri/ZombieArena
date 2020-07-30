@@ -1,46 +1,49 @@
 #pragma once
 
 #include <SFML/Graphics.hpp>
-class Bullet {
-    sf::Vector2f position;
-    sf::RectangleShape bulletShape;
-    bool isInFlight = false;
-    float bulletSpeed = 1000.0f;
 
-    /* What fraction of 1 pixel does the bullet travel */
-    /* Horizontally and vertically each frame */
-    /* These values will be derived from m_BulletSpeed */
-    float bulletDistanceX;
-    float bulletDistanceY;
+namespace game {
+    class Bullet {
+        sf::Vector2f position;
+        sf::RectangleShape bulletShape;
+        bool isInFlight = false;
+        float bulletSpeed = 1000.0f;
 
-    /* Where is this bullet headed to */
-    float targetX;
-    float targetY;
+        /* What fraction of 1 pixel does the bullet travel */
+        /* Horizontally and vertically each frame */
+        /* These values will be derived from bulletSpeed */
+        float bulletDistanceX;
+        float bulletDistanceY;
 
-    /* Some boundaries so the bullet doesn't fly forever */
-    float maxX;
-    float minX;
-    float maxY;
-    float minY;
+        /* Where is this bullet headed to */
+        float targetX;
+        float targetY;
 
-  public:
-    Bullet();
+        /* Some boundaries so the bullet doesn't fly forever */
+        float maxX;
+        float minX;
+        float maxY;
+        float minY;
 
-    virtual ~Bullet();
+      public:
+        Bullet();
 
-    void stop();
+        virtual ~Bullet();
 
-    bool isBulletInFlight();
+        void stop();
 
-    /* Launch a new bullet */
-    void shoot(float startX, float startY, float targetX, float targetY);
+        bool isBulletInFlight();
 
-    /* Tell the calling code where the bullet is in the world */
-    sf::FloatRect getPosition();
+        /* Launch a new bullet */
+        void shoot(float startX, float startY, float targetX, float targetY);
 
-    /* Return the actual shape (for drawing) */
-    sf::RectangleShape getShape();
+        /* Tell the calling code where the bullet is in the world */
+        sf::FloatRect getPosition();
 
-    /* Update the bullet each frame */
-    void update(float deltaTime);
-};
+        /* Return the actual shape (for drawing) */
+        sf::RectangleShape getShape();
+
+        /* Update the bullet each frame */
+        void update(float deltaTime);
+    };
+}
