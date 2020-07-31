@@ -51,9 +51,9 @@ bool game::Zombie::hit() {
     health--;
 
     if (health < 0) {
-        // dead
+        /* Dead */
         alive = false;
-        sprite.setTexture(game::Texture::getTexture("graphics/blood.png"));
+        sprite.setTexture(game::Texture::getTexture("asset/graphic/blood.png"));
 
         return true;
     }

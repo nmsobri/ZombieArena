@@ -1,7 +1,8 @@
 #include "include/Bullet.h"
 
 game::Bullet::Bullet() {
-    bulletShape.setSize(sf::Vector2f(2, 2));
+    bulletShape.setSize(sf::Vector2f(4, 4));
+    bulletShape.setFillColor(sf::Color::Black);
 }
 
 game::Bullet::~Bullet() {

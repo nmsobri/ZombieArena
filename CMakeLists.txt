@@ -4,11 +4,10 @@ project(ZombieArena)
 
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake")
-file(GLOB CPP "*.cpp")
 
 find_package(SFML COMPONENTS System Audio Graphics Network Window REQUIRED)
 
-add_executable(ZombieArena ${CPP})
+add_executable(ZombieArena  main.cpp Bullet.cpp Pickup.cpp Player.cpp Texture.cpp Utility.cpp Zombie.cpp)
 target_include_directories(${PROJECT_NAME} PRIVATE ${SFML_INCLUDE_DIR})
 target_link_libraries(${PROJECT_NAME} PRIVATE ${SFML_LIBRARY})
 
