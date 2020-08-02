@@ -1,5 +1,6 @@
 #include <array>
 #include <iostream>
+#include <sstream>
 #include <SFML/Graphics.hpp>
 #include "include/Bullet.h"
 #include "include/Pickup.h"
@@ -17,6 +18,8 @@ int main() {
         PLAYING
     };
 
+    int score = 0;
+    int hiScore = 0;
     float fireRate = 2;
     sf::Time lastPressed;
     int currentBullet = 0;
@@ -32,8 +35,48 @@ int main() {
     resolution.x = sf::VideoMode::getDesktopMode().width;
     resolution.y = sf::VideoMode::getDesktopMode().height;
 
+    sf::Font font;
+    font.loadFromFile("asset/font/zombiecontrol.ttf");
+
+    sf::Text textGameOver;
+    textGameOver.setFont(font);
+    textGameOver.setCharacterSize(100.f);
+    textGameOver.setString("Press Enter To Play");
+
+    std::stringstream ssHiScore;
+    ssHiScore << "High Score: " << hiScore;
+    sf::Text textHiScore;
+    textHiScore.setFont(font);
+    textHiScore.setCharacterSize(70.f);
+    textHiScore.setString(ssHiScore.str());
+
+    std::stringstream ssLevelUp;
+    ssLevelUp << "1 - Increased rate of fire"
+              << "\n2 - Increased clip size(next reload)"
+              << "\n3 - Increased max health"
+              << "\n4 - Increased run speed"
+              << "\n5 - More and better health pickups"
+              << "\n6 - More and better ammo pickups";
+
+    sf::Text textLevelUp;
+    textLevelUp.setFont(font);
+    textLevelUp.setCharacterSize(60.f);
+    textLevelUp.setString(ssLevelUp.str());
+
+    /* Positioning the text*/
+    textGameOver.setOrigin(textGameOver.getLocalBounds().width / 2, textGameOver.getLocalBounds().height / 2);
+    textGameOver.setPosition(resolution.x / 2.f, resolution.y - (textGameOver.getCharacterSize() + 50));
+    textHiScore.setPosition(resolution.x - (textHiScore.getLocalBounds().width + 30), 30);
+    textLevelUp.setOrigin(textLevelUp.getLocalBounds().width / 2.f, textLevelUp.getLocalBounds().height / 2.f);
+    textLevelUp.setPosition(resolution.x / 2.f, resolution.y / 2.f);
+
     sf::RenderWindow window(sf::VideoMode(resolution.x, resolution.y), "Zombie Arena", sf::Style::Fullscreen);
     window.setMouseCursorVisible(false);
+
+    sf::Sprite spriteGameOver;
+    sf::Texture textureGameOver = game::Texture::getTexture("asset/graphic/background.png");
+    spriteGameOver.setTexture(textureGameOver);
+    spriteGameOver.setPosition(0, 0);
 
     sf::Sprite spriteCrossHair;
     sf::Texture textureCrosshair = game::Texture::getTexture("asset/graphic/crosshair.png");
@@ -42,6 +85,9 @@ int main() {
 
     /* Create a an SFML View for the main action */
     sf::View mainView(sf::FloatRect(0, 0, resolution.x, resolution.y));
+
+    /* Create a an SFML View for the hud */
+    sf::View hudView(sf::FloatRect(0, 0, resolution.x, resolution.y));
 
     /* Here is our clock for timing everything */
     sf::Clock clock;
@@ -294,9 +340,14 @@ int main() {
         }
 
         if (state == State::LEVELING_UP) {
+            window.draw(spriteGameOver);
+            window.draw(textLevelUp);
         }
 
         if (state == State::GAME_OVER) {
+            window.draw(spriteGameOver);
+            window.draw(textGameOver);
+            window.draw(textHiScore);
         }
 
         window.display();
