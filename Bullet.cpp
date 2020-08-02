@@ -1,7 +1,7 @@
 #include "include/Bullet.h"
 
 game::Bullet::Bullet() {
-    bulletShape.setSize(sf::Vector2f(4, 4));
+    bulletShape.setSize(sf::Vector2f(BULLET_WIDTH, BULLET_HEIGHT));
     bulletShape.setFillColor(sf::Color::Black);
 }
 
@@ -81,4 +81,8 @@ void game::Bullet::update(float deltaTime) {
         position.y < minY || position.y > maxY) {
         isInFlight = false;
     }
+}
+
+void game::Bullet::destroy() {
+    bulletShape.setPosition(-1000, -100);
 }

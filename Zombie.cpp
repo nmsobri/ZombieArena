@@ -11,21 +11,21 @@ void game::Zombie::spawn(float startX, float startY, int type, int seed) {
             /* Bloater */
             sprite = sf::Sprite(game::Texture::getTexture("asset/graphic/bloater.png"));
             speed = 40;
-            health = 5;
+            health = 7;
             break;
 
         case 1:
             /* Chaser */
             sprite = sf::Sprite(game::Texture::getTexture("asset/graphic/chaser.png"));
             speed = 70;
-            health = 1;
+            health = 3;
             break;
 
         case 2:
             /* Crawler */
             sprite = sf::Sprite(game::Texture::getTexture("asset/graphic/crawler.png"));
             speed = 20;
-            health = 3;
+            health = 5;
             break;
     }
 
@@ -50,7 +50,7 @@ void game::Zombie::spawn(float startX, float startY, int type, int seed) {
 bool game::Zombie::hit() {
     health--;
 
-    if (health < 0) {
+    if (health <= 0) {
         /* Dead */
         alive = false;
         sprite.setTexture(game::Texture::getTexture("asset/graphic/blood.png"));

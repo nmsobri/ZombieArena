@@ -3,6 +3,9 @@
 #include <SFML/Graphics.hpp>
 
 namespace game {
+    const float BULLET_WIDTH = 4.f;
+    const float BULLET_HEIGHT = 4.f;
+
     class Bullet {
         sf::Vector2f position;
         sf::RectangleShape bulletShape;
@@ -45,5 +48,8 @@ namespace game {
 
         /* Update the bullet each frame */
         void update(float deltaTime);
+
+        /* kill the bullet */
+        void destroy();
     };
 }

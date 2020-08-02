@@ -2,6 +2,7 @@
 #include <iostream>
 #include <SFML/Graphics.hpp>
 #include "include/Bullet.h"
+#include "include/Collision.h"
 #include "include/Pickup.h"
 #include "include/Player.h"
 #include "include/Texture.h"
@@ -224,7 +225,6 @@ int main() {
                     if (bullets[i].isBulletInFlight() && zombies[j].isAlive()) {
                         if (bullets[i].getPosition().intersects(zombies[j].getPosition())) {
                             bullets[i].stop();
-
                             if (zombies[j].hit()) {
                                 zombiesAlive--;
 
@@ -237,9 +237,18 @@ int main() {
                 }
             }
 
+            if (player.getPosition().intersects(ammoPickup.getPosition())) {
+                ammoPickup.gotIt();
+            }
+            if (player.getPosition().intersects(healthPickup.getPosition())) {
+                healthPickup.gotIt();
+            }
+
             for (game::Bullet& bullet : bullets) {
                 if (bullet.isBulletInFlight()) {
                     bullet.update(dt.asSeconds());
+                } else {
+                    bullet.destroy();
                 }
             }
         }
@@ -251,7 +260,7 @@ int main() {
         */
         window.clear();
 
-        if (state == State::PLAYING) {
+        if (state == State::PLAYING || state == State::PAUSED) {
             /* Set the mainView to be displayed in the window */
             /* And draw everything related to it */
             window.setView(mainView);
@@ -286,9 +295,6 @@ int main() {
         }
 
         if (state == State::LEVELING_UP) {
-        }
-
-        if (state == State::PAUSED) {
         }
 
         if (state == State::GAME_OVER) {
