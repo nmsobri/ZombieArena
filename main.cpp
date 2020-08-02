@@ -2,7 +2,6 @@
 #include <iostream>
 #include <SFML/Graphics.hpp>
 #include "include/Bullet.h"
-#include "include/Collision.h"
 #include "include/Pickup.h"
 #include "include/Player.h"
 #include "include/Texture.h"
@@ -22,7 +21,7 @@ int main() {
     sf::Time lastPressed;
     int currentBullet = 0;
     std::array<game::Bullet, 100> bullets;
-    std::array<game::Zombie, 5> zombies;
+    std::array<game::Zombie, 10> zombies;
     int zombiesAlive = zombies.size();
 
     /* Start with the GAME_OVER state */
@@ -130,7 +129,6 @@ int main() {
 
                             /* Reset the clock so there isn't a frame jump */
                             clock.restart();
-
                             state = State::PLAYING;
                         }
                     }
@@ -188,6 +186,12 @@ int main() {
             /* Update the delta time */
             sf::Time dt = clock.restart();
 
+            /* Update the total game time */
+            gameTimeTotal += dt;
+
+            /* Make a decimal fraction of 1 from the delta time */
+            float dtAsSeconds = dt.asSeconds();
+
             /* Convert mouse position to world coordinates of mainView */
             mouseWorldPosition = window.mapPixelToCoords(sf::Mouse::getPosition(), mainView);
 
@@ -195,12 +199,6 @@ int main() {
             sf::Vector2f playerPosition(player.getCenter());
 
             spriteCrossHair.setPosition(mouseWorldPosition.x, mouseWorldPosition.y);
-
-            /* Update the total game time */
-            gameTimeTotal += dt;
-
-            /* Make a decimal fraction of 1 from the delta time */
-            float dtAsSeconds = dt.asSeconds();
 
             /* Where is the mouse pointer */
             mouseScreenPosition = sf::Mouse::getPosition();
@@ -230,6 +228,7 @@ int main() {
 
                                 if (zombiesAlive == 0) {
                                     state = State::LEVELING_UP;
+                                    zombiesAlive = zombies.size();
                                 }
                             }
                         }

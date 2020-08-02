@@ -45,6 +45,7 @@ void game::Zombie::spawn(float startX, float startY, int type, int seed) {
 
     sprite.setOrigin(25, 25);
     sprite.setPosition(position);
+    alive = true;
 }
 
 bool game::Zombie::hit() {
