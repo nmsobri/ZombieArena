@@ -98,4 +98,7 @@ class Player {
 
     /* Increase the maximum amount of health the player can have*/
     void increaseHealthLevel(int amount);
+
+    /* Reset player attribute*/
+    void resetPlayerStats();
 };

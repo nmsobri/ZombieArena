@@ -1,5 +1,5 @@
-#include <cmath>
 #include "include/Player.h"
+#include <cmath>
 
 Player::Player(const char* filePath) {
     speed = START_SPEED;
@@ -161,6 +161,10 @@ void Player::upgradeHealth() {
     maxHealth += START_HEALTH * 0.2;
 }
 
+void Player::upgradeSpeed() {
+    speed += (START_SPEED * .2);
+}
+
 void Player::increaseHealthLevel(int amount) {
     health += amount;
 
@@ -168,4 +172,10 @@ void Player::increaseHealthLevel(int amount) {
     if (health > maxHealth) {
         health = maxHealth;
     }
+}
+
+void Player::resetPlayerStats() {
+    speed = START_SPEED;
+    health = START_HEALTH;
+    maxHealth = START_HEALTH;
 }
