@@ -7,8 +7,9 @@ git clone https://github.com/slier81/ZombieArena
 cd ZombieArena
 mkdir build && cd build
 cmake ..
-make
+make 
 ```
+The game will be available inside `build` directory
 
 ![Timber](https://i.imgur.com/L1rI05Cl.png)
 ![Timber](https://i.imgur.com/EK1xzR0l.png)
